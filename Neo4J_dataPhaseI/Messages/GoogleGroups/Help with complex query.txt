@@ -1,0 +1,31 @@
+Help in complex query
+1 post by 1 author  
+
+
+
+Ahmed Adel 	
+15 Jul (23 hours ago)
+
+
+Hi,
+
+I am new to Neo4j and cypher quries.
+
+can you help me in the following query:
+
+MATCH (c:Customer)
+OPTIONAL MATCH (c)-[r:CUST_RESERVED]-(res:Reservation)
+with c,r,res
+where r IS NULL OR (res.end_date < "20150715" OR res.start_date >= "20150815")
+return count(c)
+
+
+I want to count the customers that are : reserved less than 2 times between 15/07 and 15/08
+
+
+so I thought to get:
+- not reserved in the period between 07/15 and 08/15 (Already achieved)
+- OR reserved less than 2 times between 15/07 and 15/08 (how ?)
+
+
+how can I define the second part ?

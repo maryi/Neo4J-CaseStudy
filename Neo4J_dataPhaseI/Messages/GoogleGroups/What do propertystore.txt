@@ -1,0 +1,22 @@
+What do propertystore.db and propertystore.db.strings store exactly?
+1 post by 1 author  
+
+
+
+Zongheng Yang 	
+11:01 (1 hour ago)
+
+
+Hi all,
+
+Quick question: what do propertystore.db and propertystore.db.strings store, respectively?
+
+My CSV headers look like these:
+
+edges -- :START_ID, :END_ID, :TYPE, timestamp:LONG, attr
+nodes -- :ID, name0, ..., name39
+
+And propertystore.db totals 10GB, propertystore.db.strings totals 17GB.  I did a quick calculation, assuming those two files store serialized JVM Strings, all the node properties should total 6GB in memory, and all the edge properties should total 17GB in memory -- the first number doesn't match the size of propertystore.db, so I am a bit confused.
+
+Thanks in advance,
+Zongheng

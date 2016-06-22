@@ -1,0 +1,180 @@
+TransactionEventHandler bug?
+8 posts by 5 authors  
+
+
+
+Clark Richey 	
+6 Jul
+
+
+Hello,
+I’m implementing a TransactionEventHandler in much the same way that is presented here: http://maxdemarzi.com/2015/03/25/triggers-in-neo4j/.
+
+
+When I have transactions that create relationships, I can correctly view those relationships by calling transactionData.createdRelationships().
+
+However, if inside of a relationship I simply set a node property by invoking node.setProperty(key,value) then the TransactionData object that is passed to the afterCommit method of my TransactionEventHandler does not list any data when the transactionData.assignedNodeProperties() method is invoked. The transaction did commit successfully because I can retrieve the node in a separate transaction and see the update value.
+
+Is this a bug or am I misunderstanding the expected behavior? Thanks!
+
+---
+
+
+
+
+
+Clark D. Richey, Jr
+CHIEF TECHNOLOGY OFFICER
+240.252.7507
+CLARK@FACTGEM.COM
+WWW.FACTGEM.COM
+
+Attachments (1)
+
+signature.asc
+859 B   View   Download
+ 
+
+
+Michael Hunger 	
+6 Jul
+
+
+Hey Clark,
+
+do you have a small test that reproduces the issue? And which version are you testing it with?
+
+thanks a lot
+
+Michael
+
+Am 06.07.2015 um 18:37 schrieb Clark Richey <cl...@factgem.com>:
+
+Hello,
+I’m implementing a TransactionEventHandler in much the same way that is presented here: http://maxdemarzi.com/2015/03/25/triggers-in-neo4j/.
+
+
+When I have transactions that create relationships, I can correctly view those relationships by calling transactionData.createdRelationships().
+
+However, if inside of a relationship I simply set a node property by invoking node.setProperty(key,value) then the TransactionData object that is passed to the afterCommit method of my TransactionEventHandler does not list any data when the transactionData.assignedNodeProperties() method is invoked. The transaction did commit successfully because I can retrieve the node in a separate transaction and see the update value.
+
+Is this a bug or am I misunderstanding the expected behavior? Thanks!
+
+---
+
+
+<fg-logo.png>
+
+
+Clark D. Richey, Jr
+CHIEF TECHNOLOGY OFFICER
+240.252.7507
+CLARK@FACTGEM.COM
+WWW.FACTGEM.COM
+
+
+-- 
+You received this message because you are subscribed to the Google Groups "Neo4j" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to neo4j+un...@googlegroups.com.
+For more options, visit https://groups.google.com/d/optout.
+
+ 
+
+
+Clark Richey 	
+6 Jul
+
+
+Sorry. I’m running 2.2.2 enterprise.
+
+I do have a test which I have attached. In creating this test I can see that events actually don’t seem to be firing consistently at all. If I delete the DB on disk between runs I can get it to fire but if I run it a second time without deleting the DB on disk it never fires.
+
+When the events do fire you will see that iterating through either the assignedNodeProperties or the createdRelationships yields no data.
+
+
+
+Attachments (1)
+
+TransactionHandlerExample.groovy
+4 KB   View   Download
+ 
+
+
+Clark Richey 	
+7 Jul
+
+
+I have confirmed the same behavior on 2.2.3 as well.
+
+Clark Richey
+clark....@gmail.com
+
+
+
+- show quoted text -
+- show quoted text -
+<TransactionHandlerExample.groovy>
+
+Clark Richey
+clark....@gmail.com
+
+
+- show quoted text -
+
+ 
+
+
+ducky 	
+10 Jul
+
+
+Could this be related to this bug:
+
+https://github.com/neo4j/neo4j/issues/4910
+- show quoted text -
+ 
+
+
+Clark Richey 	
+10 Jul
+
+
+Doesn't seem to be but I'm having trouble reproducing in a small standalone program. Working with support to diagnose. 
+
+Sent from my iPhone
+- show quoted text -
+ 
+
+
+Mattias Persson 	
+01:57 (10 hours ago)
+
+
+Hi Clark,
+
+I've converted your groovy code into java and run that in a unit test. As far as I can see all events trigger as they should.
+
+What I'm worried about is the pattern that seems to be promoted here, namely to queue the event processing in an executor service. The transaction state of a transaction is local to the thread executing the transaction and simply handing over that state to another thread without any memory barriers isn't safe, i.e. it may yield unpredictable results.
+
+My advice to you is to simply scrap the executor service and execute whatever logic you need within the same thread that gets the beforeCommit/afterCommit calls. I'll also talk to Max about this, and update the javadocs.
+
+Please try this and report back with results.
+
+Best,
+Mattias
+ 
+
+
+Clark Richey 	
+07:45 (5 hours ago)
+
+
+So when I run my tests without the executor I get an error that the transaction has already completed when I try to examine properties of created / updated nodes. Creating a new transaction doesn't help. 
+
+Sent from my iPhone
+- show quoted text -
+- show quoted text -
+-- 
+You received this message because you are subscribed to the Google Groups "Neo4j" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to neo4j+un...@googlegroups.com.
+For more options, visit https://groups.google.com/d/optout.

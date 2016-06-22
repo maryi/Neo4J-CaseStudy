@@ -1,0 +1,212 @@
+Re: [Neo4j] ArangoDB vs. Neo4j -- what's up? article of Jun 04, 2015
+1 post by 1 author  
+
+
+
+Aseem Kishore 	
+15 Jul (22 hours ago)
+
+
+Hey Michael,
+
+Sorry, I missed this question originally.
+
+I can't tell from a quick glance at the code why your async.js-based concurrency control isn't working.
+
+FWIW, the way we manage concurrency in our FiftyThree code is by taking advantage of Node's built-in support at its HTTP lib level.
+
+https://nodejs.org/api/http.html#http_new_agent_options > see `maxSockets`
+
+Basically, create a new http.Agent, set its `maxSockets` to whatever you want, and pass it as the `agent` option to node-neo4j's `GraphDatabase` constructor.
+
+That should do the trick. =)
+
+Aseem
+
+
+On Thursday, June 11, 2015 at 2:42:03 AM UTC-7, Michael Hunger wrote:
+Hi Aseem,
+
+I'm struggling a bit with concurrency in node and hope you could help me there to point me in the right direction.
+
+Their original code used just a for loop to iterate over 100k document id's and fire off all the individual load methods with a callback. As Neo has no proper backpressure management as soon as our request pool + queue got full, we didn't accept requests anymore until the first ones were served (< 1ms).
+
+So I thought it would make sense to use "async" to manage concurrency. But now it doesn't saturate the request queue anymore and most cores on the machine are idle.
+Do you have an idea what I'm doing wrong?
+
+Thanks so much !!
+
+Michael
+
+Here is the code:
+
+https://github.com/jexp/nosql-tests/blob/my-import/benchmark.js#L191
+
+here is how it looked before:
+
+https://github.com/jexp/nosql-tests/blob/2688849fe3cc3117f5c7f119ebaa2452cf678671/benchmark.js#L189
+
+
+Am 10.06.2015 um 16:08 schrieb Aseem Kishore <aseem....@gmail.com>:
+
+No problem at all. Glad it helped!
+
+On Wednesday, June 10, 2015 at 9:04:09 AM UTC-4, Frank Celler wrote:
+Hi Aseem,
+
+I have changed the tests and can confirm, that your node.js driver works as expected. I'm now able to restrict the number of connections and use keep-alive. That has indeed helped with the performance. I've updated the blog post accordingly.
+
+Thanks a lot for all your help
+  Frank
+
+Am Dienstag, 9. Juni 2015 04:34:22 UTC+2 schrieb Aseem Kishore:
+Hi Frank,
+
+Author of "the" node-neo4j here.
+
+https://github.com/thingdom/node-neo4j
+
+Unfortunately, `npm install node-neo4j` is *not* this driver. It's a different one. "This" node-neo4j is `npm install neo4j`. The version you want is indeed 2.0.0-RC1.
+
+https://www.npmjs.com/package/neo4j
+
+You'll need to change your code from `new neo4j(...)` to `new neo4j.GraphDatabase(...)`, and from `db.cypherQuery` to `db.cypher`. Full API docs here for now:
+
+https://github.com/thingdom/node-neo4j/blob/v2/API_v2.md
+
+Now for the behavior you're seeing where a new connection is being made for every query: that's really odd. What version of Node.js are you running? Node 0.10 and up use Keep-Alive by default under load, so you should not see that there:
+
+http://nodejs.org/dist/v0.10.36/docs/api/http.html#http_class_http_agent
+
+And Node 0.12 and io.js improve this support:
+
+https://iojs.org/api/http.html#http_class_http_agent
+
+Nonetheless, node-neo4j v2 does let you pass your own custom http.Agent, so you can control the connection pooling yourself if you like. E.g.:
+
+var http = require('http');
+var db = new neo4j.GraphDatabase({
+    url: 'http://...',
+    agent: new http.Agent({...}),
+});
+
+We run node-neo4j v2 on Node 0.10 in production at FiftyThree and are pretty satisfied with the performance under load. (We use a custom agent to isolate its connection pooling, and have its maxSockets currently set to 20 per Node process.) But perhaps you're exercising something different that we're not aware of.
+
+Hope this helps though.
+
+Cheers,
+Aseem
+
+On Monday, June 8, 2015 at 3:12:02 AM UTC-4, Frank Celler wrote:
+I changed the index to a constraint and updated the page-cache.
+
+However, I'm still struggling with the node.js driver. I've tried the "node-neo4j", which you get in version 2.0.3 using "npm install node-neo4j". I've created the database link using
+
+    var db = new neo4j('http://neo4j:abc@' + host + ':7474');
+
+but when running a lot of db.cypherQuery, I ended up with a lot of connections in TIME_WAIT:
+
+    $ netstat -anpt | fgrep TIME_WAIT | wc
+    1014    7098   98358
+
+So, it seems that connections are not keep open. Is there a way to specify this? For example, the MongoDB driver has a 'poolSize' argument, to specify how many connections should be keep open.
+
+Thanks for your help
+  Frank
+
+Am Sonntag, 7. Juni 2015 14:25:34 UTC+2 schrieb Michael Hunger:
+Hi,
+
+It would have been very nice to be contacted before such an article went out and not called out as part of the post to "defend yourself". Just saying.
+
+Seraph uses old and outdated, 2-year old APIs (/db/data/cypher and /db/data/node) which are not performant 
+and also misses relevant headers (e.g. X-Stream:true) for those.
+It also doesn't support http keep-alive. 
+
+I would either use requests directly or perhaps node-neo4j 2.x, would have to test though.
+
+Configuration for Neo4j also easy to improve, for your store 2.5G page-cache memory should be enough.
+The warmup is also not sufficient.
+
+And running the queries once, i.e. cold caches are also a non-production approach.
+
+I'm currently looking into it and will post an blog post with my recommendations next week.
+
+As we all know benchmark tests are always well suited to the publisher :)
+
+The index should be a unique constraint instead.
+
+Cheers, Michael
+
+Am 07.06.2015 um 12:33 schrieb Frank Celler <fce...@gmail.com>:
+
+Hi Christophe,
+
+I'm Frank from ArangoDB. The author of the article, Claudius, is my colleague - he currently not at his computer. Therefore, I try to answer your questions. Please let me know, if you need more information. Any help with the queries is more than welcome. If we can improve them in any way, please let us know.
+
+- we raised the ulimit as requested by neo4j when it started: open files (-n) 40000
+
+- there is one index on PROFILES:
+
+neo4j-sh (?)$ schema
+Indexes
+  ON :PROFILES(_key) ONLINE  
+
+- as far as we understood, there is no need to create an index for edges
+
+- we used "seraph" as node.js driver, because that was recommend in the node user group
+
+- we set
+
+dbms.pagecache.memory=20g
+
+(we were told in talk, that this is nowadays the only cache parameter that matters).
+
+- we started with 
+
+./bin/neo4j start
+
+- JVM is
+
+java version "1.7.0_79"
+Java(TM) SE Runtime Environment (build 1.7.0_79-b15)
+Java HotSpot(TM) 64-Bit Server VM (build 24.79-b02, mixed mode)
+
+Thanks for your help
+  Frank
+
+Am Freitag, 5. Juni 2015 19:25:09 UTC+2 schrieb Christophe Willemsen:
+I have looked at their repository too. Most of the queries seems 'almost' correct, but there is no information concerning the real schema indexes, the configuration of the JVM etc.., also the results are the throughput so I wait for someone maybe more experimented in these kind of benchmarks in order to reply to it.
+
+Le vendredi 5 juin 2015 04:32:59 UTC+2, Michael Hunger a écrit :
+I'm currently on the road but there are several things wrong with it. Will look into more detail in the next few days
+
+Michael
+
+Von meinem iPhone gesendet
+
+Am 04.06.2015 um 12:57 schrieb Andrii Stesin <ste...@gmail.com>:
+
+Just ran into the following article (published supposedly today Jun 04, 2015) which claims to contain comparison of benchmark results: Native multi-model can compete with pure document and graph databases which makes me think that there is something wrong with either their data model or with test setup, because results for Neo4j are surprisingly low.
+
+Am I the only one out there who feel the same?
+
+WBR,
+Andrii
+
+-- 
+You received this message because you are subscribed to the Google Groups "Neo4j" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to neo4j+un...@googlegroups.com.
+For more options, visit https://groups.google.com/d/optout.
+
+-- 
+You received this message because you are subscribed to the Google Groups "Neo4j" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to neo4j+un...@googlegroups.com.
+For more options, visit https://groups.google.com/d/optout.
+
+
+-- 
+You received this message because you are subscribed to the Google Groups "Neo4j" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to neo4j+un...@googlegroups.com.
+For more options, visit https://groups.google.com/d/optout.
+

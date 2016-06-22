@@ -1,0 +1,31 @@
+How to change the size of the off-heap in neo4j?
+2 posts by 2 authors  
+
+
+
+vanni...@eisti.eu 	
+15 Jul (23 hours ago)
+
+
+Does anyone know which parameters can affect the size of the off-heap memory?
+In neo4j documentation, they said that the size of the off-heap memory can be modified with the dbms.pagecache.memory parameter.
+I tried changing the size of this parameter, but when I check the off-heap memory with jconsole, the size is always the same.
+PS: I'm working with the free version of neo4j.
+ 
+
+
+Michael Hunger 	
+15 Jul (23 hours ago)
+
+
+It was answered on stackoverflow
+
+dbms.pagecache.memory is for Neo4j 2.2.+
+for 2.1.x see this http://neo4j.com/docs/2.1.8/configuration-io-examples.html
+
+- show quoted text -
+- show quoted text -
+-- 
+You received this message because you are subscribed to the Google Groups "Neo4j" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to neo4j+un...@googlegroups.com.
+For more options, visit https://groups.google.com/d/optout.

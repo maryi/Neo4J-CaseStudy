@@ -1,0 +1,77 @@
+NEO4J Carshes often
+3 posts by 2 authors  
+
+
+
+Harshal Patni 	
+00:05 (12 hours ago)
+
+
+Hello All,
+        We have a NEO4J instance running on a Amazon Ubuntu Server (8GB ram). We have allocated below 4GB - 6GB memory for Neo4J (which is the only software on the server). The server constantly seems to crash due to memory issues. I am attaching the error log. Can you please suggest how we could fix this?
+
+Thanks in advance!
+
+Regards,
+Harshal
+Attachments (1)
+Error.png
+27 KB   View   Download
+ 
+
+
+Michael Hunger 	
+01:30 (11 hours ago)
+
+
+this sounds like access to off-heap memory for mmio
+
+can you share your graph.db/messages.log ?
+
+can you share your config?
+
+there is mmio-memory config in neo4j.properties 
+and heap config in neo4j-wrapper.conf
+
+which should in total not exceed your 6G 
+
+what are you running there? perhaps share the type of workload / queries
+
+
+- show quoted text -
+- show quoted text -
+-- 
+You received this message because you are subscribed to the Google Groups "Neo4j" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to neo4j+un...@googlegroups.com.
+For more options, visit https://groups.google.com/d/optout.
+<Error.png>
+
+ 
+
+
+Harshal Patni 	
+07:20 (5 hours ago)
+
+
+Hello Michael,
+         Please find the config and log files attached. Please take a look and suggest what changes are required.
+
+We currently have 400K nodes in the graph. We have about 6 - 7 properties per node.
+We only have 2 relationships (hasChild and hasParent).
+The graph looks like a taxonomy of nodes.
+
+Please suggest how we could fix this issue.
+
+Thanks,
+Harshal
+- show quoted text -
+Attachments (3)
+
+messages.log
+2 MB   View   Download
+
+neo4j-wrapper.conf
+2 KB   View   Download
+
+neo4j.properties
+1 KB   View   Download

@@ -1,0 +1,35 @@
+Indexes for inequality comparisons
+2 posts by 2 authors  
+
+
+
+Alireza Rezaei Mahdiraji 	
+14 Jul
+
+
+
+Hi, 
+
+I am wondering how Neo4j indexes works for inequality comparisons? 
+Do we define them the same way as a normal index? 
+
+Thanks,
+Alireza
+ 
+
+
+Michael Hunger 	
+07:39 (5 hours ago)
+
+Other recipients: stefan.p...@neotechnology.com
+
+This is being worked on for 2.3 and will be hopefully part of the 2.3.RC1 release.
+
+Michael
+
+- show quoted text -
+- show quoted text -
+-- 
+You received this message because you are subscribed to the Google Groups "Neo4j" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to neo4j+un...@googlegroups.com.
+For more options, visit https://groups.google.com/d/optout.

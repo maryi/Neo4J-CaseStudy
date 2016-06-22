@@ -1,0 +1,55 @@
+Neo4j 2.2 not upgrading my 2.1 database :(
+2 posts by 2 authors  
+
+
+
+Josef Karthauser 	
+00:22 (12 hours ago)
+
+
+Has anyone had trouble upgrading a 2.1.x database to 2.2.3?
+
+The database immediately shuts down, with no log noise to speak of:
+
+unnamed-80:neo4j-community-2.2.3 joe$ bin/neo4j console
+
+Starting Neo4j Server console-mode...
+
+Using additional JVM arguments:  -server -XX:+DisableExplicitGC -Dorg.neo4j.server.properties=conf/neo4j-server.properties -Djava.util.logging.config.file=conf/logging.properties -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:-OmitStackTraceInFastThrow -XX:hashCode=5 -Dneo4j.ext.udc.source=tarball
+
+2015-07-16 07:20:35.642+0000 INFO  [API] Setting startup timeout to: 120000ms based on 120000
+
+2015-07-16 07:20:36.521+0000 INFO  [API] Successfully shutdown Neo4j Server.
+
+
+I'm using the stock configuration files with:
+
+allow_store_upgrade=true
+
+
+in neo4j.properties.
+
+Should I be doing anything else?
+
+Thanks,
+Joe
+ 
+
+
+Michael Hunger 	
+01:24 (11 hours ago)
+
+
+can you check graph.db/messages.log for any errors?
+
+but there are no permission issues?
+
+Michael
+
+- show quoted text -
+- show quoted text -
+-- 
+You received this message because you are subscribed to the Google Groups "Neo4j" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to neo4j+un...@googlegroups.com.
+For more options, visit https://groups.google.com/d/optout.
+

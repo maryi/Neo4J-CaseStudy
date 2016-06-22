@@ -1,0 +1,55 @@
+Google Group Policy Change - howto questions to Stack Overflow, broader discussions here
+4 posts by 2 authors  
+
+
+
+Michael Hunger 	
+2 Feb
+
+
+Hello everyone,
+
+we are really happy that the membership of the google group and the volume grew so quickly. Unfortunately we're not able to scale the answering of questions to these numbers.
+And we also think that many valuable discussions get lost or people skip the group messages just due to the volume.
+
+That's why from now on we want to encourage everyone to ask questions on Stack Overflow that related to:
+
+- how to achieve something, 
+- configuration setups, 
+- API and general usage, 
+- import/export
+- cypher questions & issues (also http://github.com/neo4j/neo4j)
+- SDN  questions & issues (also http://spring.neo4j.org/issues)
+
+Please tag your questions with "neo4j" and "cypher", "gremlin" or "spring data neo4j" accordingly. See the current list:
+
+http://stackoverflow.com/questions/tagged/neo4j
+
+Currently questions on SO are answered quickly by a group of very active people which we hope you will join. We try to chime in as often as possible (especially with unanswered questions).
+
+So PLEASE post your questions there on Stack Overflow, we will start asking individuals to move their questions to that platform and if they don't manage it, move them ourselves.
+We will also monitor this badge: http://stackoverflow.com/badges/1785/neo4j and award cool stuff for people that make it there.
+
+This google group shall return to its initial goals of having broader discussions about graph topics, modeling, architectures, roadmap, announcements, cypher evolution, open source etc. So we would love everyone who has questions or problems in these areas to reach out and start a conversation.
+
+Hope for your understanding to make more breathing room in this group and more interesting discussions in the future while keeping an interactive FAQ around Neo4j going on SO with quick feedback loops and turnaround times.
+
+Michael, for the Neo4j community team
+
+
+This post has been edited
+ 
+2 messages have been deleted.
+
+
+
+Brendan Erwin 	
+1 Feb
+
+Other recipients: michael...@neotechnology.com
+
+Could you also encourage monitoring ServerFault as well? http://serverfault.com/questions/tagged/neo4j 
+
+Some of the questions are just more appropriate for ServerFault...
+
+

@@ -1,0 +1,159 @@
+modifying more than 63 indexes in a single transaction not supported
+8 posts by 4 authors  
+
+
+
+Clark Richey 	
+10 Jul
+
+
+Running 2.2.3 I’m getting this error:
+
+IllegalStateException: modifying more than 63 indexes in a single transaction not supported. This is being thrown rom IndexDefineCommand.getOrAssignId
+
+Can someone explain this? It seems to be new in 2.2.3
+
+---
+
+
+
+
+
+Clark D. Richey, Jr
+CHIEF TECHNOLOGY OFFICER
+240.252.7507
+CLARK@FACTGEM.COM
+WWW.FACTGEM.COM
+
+Attachments (1)
+
+signature.asc
+859 B   View   Download
+ 
+
+
+Michael Hunger 	
+10 Jul
+
+
+It is a safeguard that was not in there before, due to the size of a tx-command we limited the concurrent index # that are updated in one tx.
+
+What is your use-case that you update more than 63 indexes in a single tx?
+Or is the error thrown incorrectly?
+
+Cheers, Michael
+
+Am 10.07.2015 um 23:24 schrieb Clark Richey <cl...@factgem.com>:
+
+Running 2.2.3 I’m getting this error:
+
+IllegalStateException: modifying more than 63 indexes in a single transaction not supported. This is being thrown rom IndexDefineCommand.getOrAssignId
+
+Can someone explain this? It seems to be new in 2.2.3
+
+---
+
+
+<fg-logo.png>
+
+
+Clark D. Richey, Jr
+CHIEF TECHNOLOGY OFFICER
+240.252.7507
+CLARK@FACTGEM.COM
+WWW.FACTGEM.COM
+
+
+-- 
+You received this message because you are subscribed to the Google Groups "Neo4j" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to neo4j+un...@googlegroups.com.
+For more options, visit https://groups.google.com/d/optout.
+
+ 
+
+
+Clark Richey 	
+10 Jul
+
+
+Unsure. I need to track down specifically why this is happening. 
+
+Sent from my iPhone
+- show quoted text -
+ 
+
+
+Clark Richey 	
+11 Jul
+
+
+This be clear, given the following example with 2 created nodes:
+Node a - prop1 : v1, prop2 : v2
+Node b - prop1: v3, prop2: v4
+
+Does this count as 2 index updates (because only two different property keys were updated) or 4 because each value was unique?
+
+Sent from my iPhone
+
+On Jul 10, 2015, at 20:26, Michael Hunger <michael...@neotechnology.com> wrote:
+
+- show quoted text -
+ 
+
+
+Michael Hunger 	
+11 Jul
+
+
+Afaik the message only is related to manual indexes and only counts per index (file)
+
+Von meinem iPhone gesendet
+- show quoted text -
+ 
+
+
+Axel 	
+08:17 (4 hours ago)
+
+
+We see the same exception when bulk-updating nodes with more than 63 properties (which is a common use-case) in one transaction with Structr.
+
+There are only three manual indexes, so there's something wrong in 2.2.3.
+
+It seems to effectively block any manual index update with more than 63 properties involved, is that intended?
+- show quoted text -
+- show quoted text -
+-- 
+Axel Morgner · CEO Structr (c/o Morgner UG) · Twitter @amorgner · Skype axel.morgner
+Hanauer Landstr. 291a · 60314 Frankfurt, Germany · Phone +49 151 40522060
+https://structr.org - Structr: The Game-Changing Software based on Neo4j
+https://structr.com - Structr and Neo4j Hosting
+F11B F9ED E366 E20E 5663  1807 E574 84A7 9C1E 1847
+ 
+
+
+Clark Richey 	
+11:45 (1 hour ago)
+
+
+I have talked with support and can confirm that you can’t update more than 63 indexes in a single transaction. This is intentional and is in place to deal with a problem that can occur when updating more than 63 indexes in a single transaction. It is also only an issue when using legacy (manual) indexes. Schema indexes are automatically updated and don’t suffer from this issue.
+
+
+
+Clark Richey
+clark....@gmail.com
+
+
+- show quoted text -
+ 
+
+
+Axel 	
+11:47 (58 minutes ago)
+
+
+I'm ok with not being able to update no more than 63 indexes, but we can't update more than 63 properties in a tx. That's a real blocker IMHO.
+
+Axel
+- show quoted text -
+- show quoted text -

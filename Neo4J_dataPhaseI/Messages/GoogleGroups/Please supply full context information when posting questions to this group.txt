@@ -1,0 +1,59 @@
+Please supply full context information when posting questions to this group
+8 posts by 2 authors  
+
+
+
+Michael Hunger 	
+12/01/2012
+
+
+Hi,
+as we had in the last time quite often messages that stated a question but without any further context, explanation, code or similar, I would like to urge you to provide
+as much information possible with your first email to allow others to help you.
+
+I think all our time is precious and it is just politeness to the other members of this group not to waste their time by writing back and forth.
+
+The more volume this group gets, the more unlikely is that those questions will be answered at all.
+
+So whenever you post a question please make sure to include the necessary things to understand it:
+
+* neo4j version, library versions, OS, jdk
+* explanation
+* code
+* graph-structure (ascii art or graphics)
+* any other helpful information
+
+if appropriate:
+* application output
+* log-files, 
+* exceptions with *full* stacktraces
+
+Thanks a lot
+
+Michael
+
+ 
+
+
+James Thornton 	
+18/01/2012
+
+
+Also consider posting code snippets, logs, and stacktraces as a Gist so that it's more readable:
+
+https://gist.github.com/
+
+- James
+ 
+4 messages have been deleted.
+
+
+
+Michael Hunger 	
+14/08/2012
+
+
+Please also supply programming language/driver name/query language used (possibly in the subject)
+
+ 
+This message has been deleted.
